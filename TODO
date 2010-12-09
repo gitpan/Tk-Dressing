@@ -1,0 +1,9 @@
+#==================================================================
+# Author    : Djibril Ousmanou
+# Copyright : 2010
+# Update    : 09/12/2010 20:35:41
+# AIM       : Tk::Dressing
+#==================================================================
+
+Allow configuration of Tk::messageBox and Tk::MsgBox
+Add new themes to dress your widget
