@@ -2,7 +2,7 @@
 #==================================================================
 # Author    : Djibril Ousmanou
 # Copyright : 2010
-# Update    : 09/12/2010 23:04:44
+# Update    : 10/12/2010 08:57:25
 # AIM       : Test Tk::Dressing with standard widget
 #==================================================================
 BEGIN {
@@ -35,11 +35,9 @@ use Tk::NoteBook;
 use Tk::Tree;
 use Tk::Pane;
 use Tk::ProgressBar;
-
 use Tk::Table;
 use Tk::TList;
 
-use lib '../lib';
 use Tk::Dressing;
 
 my $TkDressing = new Tk::Dressing;
@@ -162,7 +160,6 @@ my $but_Dialog = $labframe->Button(
       -theme  => $BrowseEntryTheme->Subwidget('entry')->get,
     );
     $dialog->Show;
-
   }
 );
 
@@ -231,7 +228,7 @@ my $Menubutton = $onglet3->Menubutton(
   -menuitems => [
     [ 'command', => 'one' ],
     [ 'command', => 'two' ],
-    '-',    # separateur
+    '-',
     [ 'command', => 'three' ],
     [ 'command', => 'four' ],
   ],

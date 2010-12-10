@@ -7,7 +7,7 @@ use Carp;
 #==================================================================
 # Author    : Djibril Ousmanou
 # Copyright : 2010
-# Update    : 09/12/2010 23:04:44
+# Update    : 10/12/2010 09:08:03
 # AIM       : Set a design for a Tk widget and its children
 #==================================================================
 
@@ -18,7 +18,7 @@ use File::Copy qw / copy /;
 use File::Spec;
 
 use vars qw($VERSION);
-$VERSION = '1.00';
+$VERSION = '1.01';
 
 # get theme directory
 my $themes_directory = File::Spec->catfile( dirname( $INC{'Tk/Dressing.pm'} ), 'DressingThemes' );
@@ -236,7 +236,7 @@ __END__
 
 =head1 NAME
 
-Tk::Dressing - Set a theme in your widget.
+Tk::Dressing - Set a theme (dressing) in your widget and its children.
 
 =head1 SYNOPSIS
 
@@ -274,15 +274,18 @@ Tk::Dressing - Set a theme in your widget.
       );
     },
   );
+  
   MainLoop();
+
 
 =head1 DESCRIPTION
 
-Tk::Dressing allows you to set a theme in your widget by using one of different default themes or by loading a new theme. A theme contains all options 
-that you want to use to configure the Tk widgets (color of buttons, of Entry, ...). 
+Tk::Dressing allows you to set a theme (dressing) in your widget and its children by using one of different default 
+themes or by loading a new theme. A theme contains all options that you want to use to configure the Tk widgets 
+(color of buttons, of Entry, ...). 
 
-Everybody can participate to increase the themes of this module 
-by proposing a theme that will be store in the module because each theme is stored in an ini file.
+Everybody can participate to increase the themes of this module by proposing a theme that 
+will be store in the module because each theme is stored in an ini file.
 
 =head1 CONSTRUCTOR/METHODS
 
@@ -309,7 +312,7 @@ B<$TkDressing-E<gt>clear( $Widget )>
 
 =head2 design_widget
 
-Set the theme on your widget and its children.
+Set the theme (dressing) on your widget and its children.
 
 B<$TkDressing-E<gt>design_widget( -widget =E<gt> $Widget, -theme =E<gt> $ThemeName )>
 
@@ -342,7 +345,7 @@ Default : B<djibel>
 
 =head2 get_all_theme
 
-Get all the themes available and loaded in your widget.
+Get all the available themes and loaded in your widget.
 
   my @all_themes = $TkDressing->get_all_theme;
 
@@ -367,6 +370,7 @@ B<$file> = B<$TkDressing-E<gt>get_default_theme_file(I<$theme>, I<$directory>)>
 =head2 load_theme_file
 
 Loads your own theme file to design your widget.
+
   # Load your file
   $TkDressing->load_theme_file($theme, $theme_file);
   # Set it to e frame widget
@@ -375,8 +379,9 @@ Loads your own theme file to design your widget.
    -theme  => $theme,
   );
 
-Your file must be an .ini file and must contain sections. Each section correspond to a widget, 
-that is an example.
+
+Your file must be an .ini file and must contain sections. 
+Each section correspond to a widget, that is an example.
 
   [BrowseEntry]
   -background: #697E6D
@@ -428,8 +433,10 @@ that is an example.
 =head1 How to participate to module to increase number of default themes ?
 
 The first aim of Tk::Dressing is to allow user to choice between theme proposed. But it is important 
-to Tk::Dressing to propose a lot of default themes then, your help is welcome. Send me an .ini file and the name of your theme 
-by email address or through the web interface at : L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Tk-Dressing> 
+to Tk::Dressing to propose a lot of default themes then, your help is welcome. 
+
+Send me an .ini file and the name of your theme by email address or through the web 
+interface at : L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Tk-Dressing> 
 and I will be add it in the module in a new release.
 
 =head1 EXAMPLE

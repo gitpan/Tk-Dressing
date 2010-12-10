@@ -1,5 +1,8 @@
 Revision history for Tk-Dressing
 
-1.00    07/12/2010 20:52:50
-        First version.
+1.01    10/12/2010 08:59:18
+        POD documentation updated and test script corected.
+
+1.00    09/12/2010 23:08:56
+        First version of Tk::Dressing.
 
