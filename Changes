@@ -1,5 +1,13 @@
 Revision history for Tk-Dressing
 
+1.02    11/12/2010 19:53:06
+        minor bug resolved.
+        POD documentation updated
+        Thank you B. Jesson for yours new themes proposed
+          - pink
+          - purple
+          - sunflower
+
 1.01    10/12/2010 08:59:18
         POD documentation updated and test script corected.
 

@@ -7,9 +7,12 @@ lib/Tk/DressingThemes/bluesky.ini
 lib/Tk/DressingThemes/country.ini
 lib/Tk/DressingThemes/djibel.ini
 lib/Tk/DressingThemes/dynamite.ini
+lib/Tk/DressingThemes/pink.ini
 lib/Tk/DressingThemes/poker.ini
+lib/Tk/DressingThemes/purple.ini
 lib/Tk/DressingThemes/snow.ini
 lib/Tk/DressingThemes/standard.ini
+lib/Tk/DressingThemes/sunflower.ini
 Makefile.PL
 MANIFEST
 META.yml

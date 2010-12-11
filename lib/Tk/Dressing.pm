@@ -7,7 +7,7 @@ use Carp;
 #==================================================================
 # Author    : Djibril Ousmanou
 # Copyright : 2010
-# Update    : 10/12/2010 09:08:03
+# Update    : 11/12/2010 19:43:14
 # AIM       : Set a design for a Tk widget and its children
 #==================================================================
 
@@ -18,7 +18,7 @@ use File::Copy qw / copy /;
 use File::Spec;
 
 use vars qw($VERSION);
-$VERSION = '1.01';
+$VERSION = '1.02';
 
 # get theme directory
 my $themes_directory = File::Spec->catfile( dirname( $INC{'Tk/Dressing.pm'} ), 'DressingThemes' );
@@ -209,12 +209,6 @@ sub design_widget {
   if ( my $design_type = $ref_config_theme->{$type} ) {
     # Set configuration
     $widget->configure( %{$design_type} );
-    if ($type eq 'ProgressBar') { 
-     $widget->configure( '-width' => 10 );
-     $widget->parent->update;
-     $widget->configure( '-width' => 100 );
-     $widget->parent->update;
-    } 
   }
 
   # children widgets design setting
@@ -252,6 +246,8 @@ Tk::Dressing - Set a theme (dressing) in your widget and its children.
   
   my $mw = new MainWindow( -title => "Dressing widget", );
   $mw->minsize( 300, 100 );
+  
+  $mw->Button( -text => 'Close', )->pack(qw/ -side bottom -padx 10 -pady 10 /);
   
   my $BrowseEntryTheme = $mw->BrowseEntry(
     -label   => "Select a theme : ",
@@ -432,12 +428,12 @@ Each section correspond to a widget, that is an example.
 
 =head1 How to participate to module to increase number of default themes ?
 
-The first aim of Tk::Dressing is to allow user to choice between theme proposed. But it is important 
-to Tk::Dressing to propose a lot of default themes then, your help is welcome. 
+The first aim of Tk::Dressing is to allow user to choose between the proposed theme. But it is important 
+for Tk::Dressing to propose a lot of default themes then, your help is welcome. 
 
-Send me an .ini file and the name of your theme by email address or through the web 
-interface at : L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Tk-Dressing> 
-and I will be add it in the module in a new release.
+Send me a .ini file and the name of your theme by email or through the web 
+interface at : L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Tk-Dressing>. 
+I will add it in the module in a new release. It will be notified in Change file.
 
 =head1 EXAMPLE
 
