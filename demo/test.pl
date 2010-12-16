@@ -42,7 +42,7 @@ use Tk::Dressing;
 
 my $TkDressing = new Tk::Dressing;
 
-my $mw = new MainWindow( -title => 'Using Tk::Dressing' );
+my $mw = new MainWindow( -title => 'Using Tk::Dressing');
 $mw->minsize( 400, 400 );
 
 # menubar

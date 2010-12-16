@@ -1,5 +1,8 @@
 Revision history for Tk-Dressing
 
+1.03    15/12/2010 21:04:28
+        Themes updated because some color options had been forgotten for standard widgets.
+        
 1.02    11/12/2010 19:53:06
         minor bug resolved.
         POD documentation updated

@@ -7,7 +7,7 @@ use Carp;
 #==================================================================
 # Author    : Djibril Ousmanou
 # Copyright : 2010
-# Update    : 11/12/2010 19:43:14
+# Update    : 15/12/2010 22:02:36
 # AIM       : Set a design for a Tk widget and its children
 #==================================================================
 
@@ -18,7 +18,7 @@ use File::Copy qw / copy /;
 use File::Spec;
 
 use vars qw($VERSION);
-$VERSION = '1.02';
+$VERSION = '1.03';
 
 # get theme directory
 my $themes_directory = File::Spec->catfile( dirname( $INC{'Tk/Dressing.pm'} ), 'DressingThemes' );
