@@ -20,7 +20,7 @@ name: Tk-Dressing
 provides:
   Tk::Dressing:
     file: lib/Tk/Dressing.pm
-    version: 1.03
+    version: 1.04
 resources:
   license: http://dev.perl.org/licenses/
-version: 1.03
+version: 1.04

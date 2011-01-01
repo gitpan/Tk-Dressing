@@ -1,10 +1,11 @@
 Build.PL
 Changes
-demo/test.pl
+demo/tk_dressing.pl
 lib/Tk/Dressing.pm
 lib/Tk/DressingThemes/black.ini
 lib/Tk/DressingThemes/bluesky.ini
 lib/Tk/DressingThemes/country.ini
+lib/Tk/DressingThemes/darkblue.ini
 lib/Tk/DressingThemes/djibel.ini
 lib/Tk/DressingThemes/dynamite.ini
 lib/Tk/DressingThemes/pink.ini

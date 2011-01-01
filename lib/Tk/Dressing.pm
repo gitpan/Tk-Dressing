@@ -5,10 +5,10 @@ use strict;
 use Carp;
 
 #==================================================================
-# Author    : Djibril Ousmanou
-# Copyright : 2010
-# Update    : 15/12/2010 22:02:36
-# AIM       : Set a design for a Tk widget and its children
+# $Author    : Djibril Ousmanou                                   $
+# $Copyright : 2011                                               $
+# $Update    : 01/01/2011 00:00:00                                $
+# $AIM       : Set a design for a Tk widget and its children      $
 #==================================================================
 
 use Tk;
@@ -18,7 +18,7 @@ use File::Copy qw / copy /;
 use File::Spec;
 
 use vars qw($VERSION);
-$VERSION = '1.03';
+$VERSION = '1.04';
 
 # get theme directory
 my $themes_directory = File::Spec->catfile( dirname( $INC{'Tk/Dressing.pm'} ), 'DressingThemes' );
@@ -26,13 +26,14 @@ my $themes_directory = File::Spec->catfile( dirname( $INC{'Tk/Dressing.pm'} ), '
 my %new_theme;
 my %initial_theme;
 my $current_theme;
+my $POINT = q{.};
 
 sub new {
   my ($self) = @_;
 
   $self = ref($self) || $self;
   my $this = {};
-  bless( $this, $self );
+  bless $this, $self;
 
   return $this;
 }
@@ -46,15 +47,13 @@ sub get_current_theme {
 sub get_all_theme {
   my $this = shift;
 
-  opendir( THEME, $themes_directory ) or croak "Unable to read themes directory : $themes_directory\n";
-  my @alltheme = grep {/.ini$/} readdir(THEME);
-  foreach (@alltheme) {
-    s{\.ini$}{};
-  }
-  closedir(THEME);
+  opendir my $fh_rep, $themes_directory or croak "Unable to read themes directory : $themes_directory\n";
+  my @alltheme = grep {m/\.ini$/msx} readdir $fh_rep;
+  foreach (@alltheme) { s/\.ini$//msx; }
+  closedir $fh_rep or croak "Unable to close themes directory\n";
 
   # New themes loaded
-  push( @alltheme, keys %new_theme );
+  push @alltheme, keys %new_theme;
 
   my %unique;
   @unique{@alltheme} = ();
@@ -65,12 +64,12 @@ sub get_all_theme {
 sub get_default_theme_file {
   my ( $this, $theme, $directory ) = @_;
 
-  unless ( defined $theme ) {
+  if ( not defined $theme ) {
     carp("Theme not defined\n");
     return;
   }
 
-  $directory = defined $directory ? $directory : '.';
+  $directory = defined $directory ? $directory : $POINT;
 
   my $theme_file     = "$themes_directory/$theme.ini";
   my $new_theme_file = "$directory/$theme.ini";
@@ -101,7 +100,7 @@ sub load_theme_file {
 sub clear {
   my ( $this, $widget ) = @_;
 
-  unless ( defined $widget and Exists $widget) {
+  if ( ( not defined $widget ) or ( !Exists $widget) ) {
     carp("Widget not defined\n");
     return;
   }
@@ -117,28 +116,23 @@ sub clear {
 sub _default_config {
   my ( $this, $widget, $ref_config_theme ) = @_;
 
-  my ( $class, $type ) = split( /::/, ref($widget) );
+  my ( $class, $type ) = split m/::/msx, ref $widget;
   $type = defined $type ? $type : $class;
-  return unless defined $type;
+  if ( not defined $type ) { return; }
 
   # Store the initial configuration before set the first theme
-  unless ( $initial_theme{$type} ) {
+  if ( !$initial_theme{$type} ) {
     foreach my $option ( sort keys %{ $ref_config_theme->{$type} } ) {
+      my $initial_value = $widget->cget($option);
+      next if ( not defined $initial_value );
 
-      #my ( $name, undef, undef, $default_value, $current_value ) = $widget->configure($option);
-      #my $ValueInitial = defined $current_value ? $current_value : $default_value;
-      #print "$type => $name : $default_value, $current_value\n";
-
-      my $ValueInitial = $widget->cget($option);
-      next unless defined $ValueInitial;
-      
-      if ( $ValueInitial eq 'SystemButtonFace' and $type eq 'Entry' ) {
-        $ValueInitial = 'white' if ( $option eq '-background' );
+      if ( $initial_value eq 'SystemButtonFace' and $type eq 'Entry' ) {
+        if ( $option eq '-background' ) { $initial_value = 'white'; }
       }
-      elsif ( $ValueInitial eq 'SystemWindow' and $type eq 'Frame' ) {
-        $ValueInitial = 'SystemButtonFace';
+      elsif ( $initial_value eq 'SystemWindow' and $type eq 'Frame' ) {
+        $initial_value = 'SystemButtonFace';
       }
-      $initial_theme{$type}{$option} = $ValueInitial;
+      $initial_theme{$type}{$option} = $initial_value;
     }
   }
 
@@ -156,13 +150,13 @@ sub design_widget {
   my ( $this, %information ) = @_;
 
   my $theme = $information{-theme} || 'djibel';
-  unless ( defined $theme ) {
+  if ( not defined $theme ) {
     carp("Theme not defined\n");
     return;
   }
 
   my $widget = $information{-widget};
-  unless ( defined $widget and Exists $widget) {
+  if ( ( not defined $widget ) or ( !Exists $widget ) ) {
     carp("Widget not defined\n");
     return;
   }
@@ -181,7 +175,7 @@ sub design_widget {
   }
   else {
     my $theme_file = "$themes_directory/$theme.ini";
-    unless ( -e $theme_file ) {
+    if ( !-e $theme_file ) {
       carp("$theme not found\n");
       return;
     }
@@ -190,23 +184,24 @@ sub design_widget {
     $new_theme{$theme} = \%config;
     $ref_config_theme = $new_theme{$theme};
   }
-  return unless defined $ref_config_theme;
+  if ( not defined $ref_config_theme ) { return; }
 
   # Get Default configuration
-  unless ( %initial_theme or ( defined $clear and $clear == 1 ) ) {
+  if ( ( !%initial_theme ) or ( not defined $clear or $clear != 1 ) ) {
     $this->_default_config( $widget, $ref_config_theme );
   }
 
   # Get Class an type of widget to design it
-  my ( $class, $type ) = split( /::/, ref($widget) );
+  my ( $class, $type ) = split m/::/msx, ref $widget;
 
   # For MainWindows widget, ref($widget) = MainWindow, then $type = $class
   # Else for Tk::Widget, ref($widget) = Tk::Toplevel or Tk::Frame, etc => $type ok
   $type = defined $type ? $type : $class;
-  return unless defined $type;
+  if ( not defined $type ) { return; }
 
   # Read configuration option
   if ( my $design_type = $ref_config_theme->{$type} ) {
+
     # Set configuration
     $widget->configure( %{$design_type} );
   }
@@ -242,29 +237,29 @@ Tk::Dressing - Set a theme (dressing) in your widget and its children.
   
   use Tk::BrowseEntry;
   
-  my $TkDressing = new Tk::Dressing;
+  my $tk_dressing = Tk::Dressing->new();
   
-  my $mw = new MainWindow( -title => "Dressing widget", );
+  my $mw = MainWindow->new( -title => "Dressing widget", );
   $mw->minsize( 300, 100 );
   
   $mw->Button( -text => 'Close', )->pack(qw/ -side bottom -padx 10 -pady 10 /);
   
-  my $BrowseEntryTheme = $mw->BrowseEntry(
+  my $browse_entry_theme = $mw->BrowseEntry(
     -label   => "Select a theme : ",
     -state   => 'readonly',
-    -choices => [ 'clear dressing', sort $TkDressing->get_all_theme ],
+    -choices => [ 'clear dressing', sort $tk_dressing->get_all_theme ],
   )->pack;
   
-  my $Message = "Hello everybody\n\nWelcome to Perl/Tk and Tk::Dressing\n\n";
-  $mw->Label( -text => $Message,     -anchor => 'center' )->pack(qw/ -side top -padx 10 -pady 10 /);
+  my $message = "Hello everybody\n\nWelcome to Perl/Tk and Tk::Dressing\n\n";
+  $mw->Label( -text => $message,     -anchor => 'center' )->pack(qw/ -side top -padx 10 -pady 10 /);
   $mw->Label( -text => 'Example : ', -anchor => 'center' )->pack(qw/ -side left -padx 10 -pady 10 /);
   $mw->Entry( -text => 'test', )->pack(qw/ -side left -padx 10 -pady 10 /);
   
-  $BrowseEntryTheme->configure(
+  $browse_entry_theme->configure(
     -browse2cmd => sub {
-      my $theme = $BrowseEntryTheme->Subwidget('entry')->get;
-      if ( $theme eq 'clear dressing' ) { $TkDressing->clear($mw); return; }
-      $TkDressing->design_widget(
+      my $theme = $browse_entry_theme->Subwidget('entry')->get;
+      if ( $theme eq 'clear dressing' ) { $tk_dressing->clear($mw); return; }
+      $tk_dressing->design_widget(
         -widget => $mw,
         -theme  => $theme,
       );
@@ -289,32 +284,32 @@ will be store in the module because each theme is stored in an ini file.
 
 This constructor allows you to create a new Tk::Dressing object.
 
-B<$TkDressing = new Tk::Dressing>
+B<$tk_dressing = Tk::Dressing-E<gt>new()>
 
 The new() method is the main constructor for the Tk::Dressing module.
 
   # Create Tk::Dressing constructor
-  my $TkDressing = new Tk::Dressing;
+  my $tk_dressing = Tk::Dressing->new();
 
 
 =head2 clear
 
 This method allow you to replace your last theme set by the default look and feel of your widget.
 
-B<$TkDressing-E<gt>clear( $Widget )>
+B<$tk_dressing-E<gt>clear( $widget )>
 
-  $TkDressing->clear($mw);
+  $tk_dressing->clear($mw);
 
 
 =head2 design_widget
 
 Set the theme (dressing) on your widget and its children.
 
-B<$TkDressing-E<gt>design_widget( -widget =E<gt> $Widget, -theme =E<gt> $ThemeName )>
+B<$tk_dressing-E<gt>design_widget( -widget =E<gt> $widget, -theme =E<gt> $theme_name )>
 
 =over 4
 
-=item B<-widget> =E<gt> I<$Widget>
+=item B<-widget> =E<gt> I<$widget>
 
 Specifies the widget. The widget can be a Toplevel, Frame, Button, ...
 
@@ -334,7 +329,7 @@ Default : B<djibel>
 
 =back
 
-  $TkDressing->design_widget(
+  $tk_dressing->design_widget(
    -widget => $mw,
    -theme  => 'djibel',
   );
@@ -343,23 +338,23 @@ Default : B<djibel>
 
 Get all the available themes and loaded in your widget.
 
-  my @all_themes = $TkDressing->get_all_theme;
+  my @all_themes = $tk_dressing->get_all_theme;
 
 
 =head2 get_current_theme
 
 Get the theme in used in your widget.
 
-  my $current_theme = $TkDressing->get_current_theme;
+  my $current_theme = $tk_dressing->get_current_theme;
 
 
 =head2 get_default_theme_file
 
 Get an .ini file of one of default themes of module.
 
-B<$file> = B<$TkDressing-E<gt>get_default_theme_file(I<$theme>, I<$directory>)>
+B<$file> = B<$tk_dressing-E<gt>get_default_theme_file(I<$theme>, I<$directory>)>
 
-  my $file = $TkDressing->get_default_theme_file('djibel', '/home/user');
+  my $file = $tk_dressing->get_default_theme_file('djibel', '/home/user');
   # $file will be contain /home/user/djibel.ini and this file will be create.
 
 
@@ -368,10 +363,10 @@ B<$file> = B<$TkDressing-E<gt>get_default_theme_file(I<$theme>, I<$directory>)>
 Loads your own theme file to design your widget.
 
   # Load your file
-  $TkDressing->load_theme_file($theme, $theme_file);
+  $tk_dressing->load_theme_file($theme, $theme_file);
   # Set it to e frame widget
-  $TkDressing->design_widget(
-   -widget => $Frame,
+  $tk_dressing->design_widget(
+   -widget => $frame,
    -theme  => $theme,
   );
 
@@ -441,7 +436,7 @@ See the demo directory in the distribution to execute an example program using T
 
 =head1 SEE ALSO
 
-See L<Tk::CmdLine> and Tk::Preferences.
+See L<Tk::CmdLine/NAME> and L<Tk::Preferences/NAME>.
 
 =head1 AUTHOR
 
@@ -488,7 +483,7 @@ L<http://search.cpan.org/dist/Tk-Dressing/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2010 Djibril Ousmanou.
+Copyright 2011 Djibril Ousmanou.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published

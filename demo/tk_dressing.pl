@@ -1,25 +1,29 @@
 #!/usr/bin/perl
 #==================================================================
-# Author    : Djibril Ousmanou
-# Copyright : 2010
-# Update    : 11/12/2010 19:43:33
-# AIM       : Test Tk::Dressing with standard widget
+# $Author    : Djibril Ousmanou                                   $
+# $Copyright : 2011                                               $
+# $Update    : 01/01/2011 00:00:00                                $
+# $AIM       : Test Tk::Dressing with standard widget             $
 #==================================================================
+use warnings;
+use Carp;
+use strict;
+use English qw( -no_match_vars );
+
+use vars qw($VERSION);
+$VERSION = '1.04';
+
 BEGIN {
   my $error;
   foreach my $module (qw/ Tk::ColoredButton Tk::Canvas::GradientColor /) {
     eval "use $module;";
-    $error .= "\t- $module\n" if ( $@ !~ /^\s*$/ );
+    if ( $EVAL_ERROR !~ /^\s*$/ ) { $error .= "\t- $module\n"; }
   }
   if ( defined $error ) {
-    warn("[ERROR] To use this test script you need to install theses modules :\n$error");
+    carp("[ERROR] To use this test script you need to install theses modules :\n$error");
     exit;
   }
 }
-
-use warnings;
-use Carp;
-use strict;
 
 use Tk;
 use Tk::BrowseEntry;
@@ -40,33 +44,33 @@ use Tk::TList;
 
 use Tk::Dressing;
 
-my $TkDressing = new Tk::Dressing;
+my $tk_dressing = Tk::Dressing->new();
 
-my $mw = new MainWindow( -title => 'Using Tk::Dressing');
+my $mw = MainWindow->new( -title => 'Using Tk::Dressing' );
 $mw->minsize( 400, 400 );
 
 # menubar
-my $BarMenu = $mw->Menu( -type => "menubar", );
-$mw->configure( -menu => $BarMenu, );
+my $menu_bar = $mw->Menu( -type => 'menubar', );
+$mw->configure( -menu => $menu_bar, );
 
-my $FileMenu = $BarMenu->cascade( -label => 'Files', -tearoff => 0, );
-$FileMenu->command( -label => 'File 1', );
-$FileMenu->command( -label => 'File 2', -compound => "left" );
-$FileMenu->command( -label => 'File 3', );
-my $ExitMenu = $BarMenu->cascade( -label => 'exit', -tearoff => 0, );
-$ExitMenu->command( -label => 'Close', -command => sub { exit; } );
+my $file_menu = $menu_bar->cascade( -label => 'Files', -tearoff => 0, );
+$file_menu->command( -label => 'File 1', );
+$file_menu->command( -label => 'File 2', -compound => 'left' );
+$file_menu->command( -label => 'File 3', );
+my $exit_menu = $menu_bar->cascade( -label => 'exit', -tearoff => 0, );
+$exit_menu->command( -label => 'Close', -command => sub { exit; } );
 
-my $label = $mw->Label( -text => "List of different standard widget" );
-my $BrowseEntryTheme = $mw->BrowseEntry(
-  -label   => "Theme : ",
+my $label = $mw->Label( -text => 'List of different standard widget' );
+my $browse_entry_theme = $mw->BrowseEntry(
+  -label   => 'Theme : ',
   -state   => 'readonly',
-  -choices => [ 'clear dressing', sort $TkDressing->get_all_theme ],
+  -choices => [ 'clear dressing', sort $tk_dressing->get_all_theme ],
 );
-$BrowseEntryTheme->configure(
+$browse_entry_theme->configure(
   -browse2cmd => sub {
-    my $theme = $BrowseEntryTheme->Subwidget('entry')->get;
-    if ( $theme eq 'clear dressing' ) { $TkDressing->clear($mw); return; }
-    $TkDressing->design_widget(
+    my $theme = $browse_entry_theme->Subwidget('entry')->get;
+    if ( $theme eq 'clear dressing' ) { $tk_dressing->clear($mw); return; }
+    $tk_dressing->design_widget(
       -widget => $mw,
       -theme  => $theme,
     );
@@ -75,25 +79,25 @@ $BrowseEntryTheme->configure(
 
 my $labframe = $mw->LabFrame( -label => 'My LabFrame' );
 
-my $labelentry    = $labframe->Label( -text => "Entry" );
+my $labelentry    = $labframe->Label( -text => 'Entry' );
 my $entry         = $labframe->Entry();
 my $entrydisabled = $labframe->Entry( -text => 'Entry disabled', -state => 'disabled' );
 my $but1          = $labframe->Button( -text => 'Test button' );
 my $but2          = $labframe->Button( -text => 'Test button disabled', -state => 'disabled' );
-my $ColoredButton1
+my $coloredbutton1
   = $labframe->ColoredButton( -text => 'ColoredButton1', -tooltip => 'load file', -autofit => 1 );
 
 my $checkbutton1 = $labframe->Checkbutton( -text => 'Example checkbutton', );
-my $ColoredButton2 = $labframe->ColoredButton(
+my $coloredbutton2 = $labframe->ColoredButton(
   -text    => 'CLEAR THEME',
   -tooltip => 'Button5',
   -font    => '{arial} 12 bold',
   ,
   -autofit  => 1,
   -gradient => { -start_color => '#FFCC33', -end_color => '#9999FF', },
-  -command => sub { $TkDressing->clear($mw); return; },
+  -command => sub { $tk_dressing->clear($mw); return; },
 );
-my $ColoredButton3 = $labframe->ColoredButton(
+my $coloredbutton3 = $labframe->ColoredButton(
   -text           => 'ColoredButton 3',
   -tooltip        => 'Button8',
   -gradient       => { -start_color => '#666666', -end_color => '#00B0D0' },
@@ -101,15 +105,15 @@ my $ColoredButton3 = $labframe->ColoredButton(
 );
 
 # Radiobutton
-my $Radiobutton1 = $labframe->Radiobutton( -text => 'Radiobutton1', );
-my $Radiobutton2 = $labframe->Radiobutton( -text => 'Radiobutton2', -value => 0 );
-my $Radiobutton3 = $labframe->Radiobutton( -text => 'Radiobutton3', -state => 'disabled' );
+my $radiobutton1 = $labframe->Radiobutton( -text => 'Radiobutton1', );
+my $radiobutton2 = $labframe->Radiobutton( -text => 'Radiobutton2', -value => 0 );
+my $radiobutton3 = $labframe->Radiobutton( -text => 'Radiobutton3', -state => 'disabled' );
 
 # messageBox, MsgBox, DialogBox and Dialog
-my $but_messageBox = $labframe->Button(
+my $button_messagebox = $labframe->Button(
   -text    => 'messageBox',
   -command => sub {
-    my $reponse_messageBox = $labframe->messageBox(
+    my $reponse_messagebox = $labframe->messageBox(
       -icon    => 'info',
       -title   => 'Message',
       -type    => 'OK',
@@ -117,35 +121,35 @@ my $but_messageBox = $labframe->Button(
     );
   }
 );
-my $but_MsgBox = $labframe->Button(
+my $button_msgbox = $labframe->Button(
   -text    => 'MsgBox',
   -command => sub {
-    my $MsgBox = $labframe->MsgBox(
+    my $msgbox = $labframe->MsgBox(
       -title   => 'MsgBox',
       -type    => 'okcancel',
       -message => 'Tk::Dressing not work in MsgBox',
     );
 
-    my $button = $MsgBox->Show;
+    my $button = $msgbox->Show;
   }
 );
-my $but_DialogBox = $labframe->Button(
+my $button_dialogbox = $labframe->Button(
   -text    => 'DialogBox',
   -command => sub {
-    my $DialogBox = $labframe->DialogBox(
+    my $dialogbox = $labframe->DialogBox(
       -title   => 'DialogBox',
-      -buttons => [ "OK", "Cancel" ]
+      -buttons => [ 'OK', 'Cancel' ]
     );
-    $DialogBox->Label( -text => "Test DialogBox", )->pack();
-    $TkDressing->design_widget(
-      -widget => $DialogBox,
-      -theme  => $BrowseEntryTheme->Subwidget('entry')->get,
+    $dialogbox->Label( -text => 'Test DialogBox', )->pack();
+    $tk_dressing->design_widget(
+      -widget => $dialogbox,
+      -theme  => $browse_entry_theme->Subwidget('entry')->get,
     );
 
-    $DialogBox->Show;
+    $dialogbox->Show;
   }
 );
-my $but_Dialog = $labframe->Button(
+my $button_dialog = $labframe->Button(
   -text    => 'Dialog',
   -command => sub {
     my $dialog = $mw->Dialog(
@@ -155,9 +159,9 @@ my $but_Dialog = $labframe->Button(
       -default_button => 'Yes',
       -buttons        => [qw/Yes No Cancel/],
     );
-    $TkDressing->design_widget(
+    $tk_dressing->design_widget(
       -widget => $dialog,
-      -theme  => $BrowseEntryTheme->Subwidget('entry')->get,
+      -theme  => $browse_entry_theme->Subwidget('entry')->get,
     );
     $dialog->Show;
   }
@@ -173,7 +177,7 @@ my $scale = $labframe->Scale(
 );
 
 # Spinbox
-my $Spinbox = $labframe->Spinbox( qw/-from 1 -to 10 -width 10 -validate key/, );
+my $spinbox = $labframe->Spinbox( qw/-from 1 -to 10 -width 10 -validate key/, );
 
 # Listbox
 my $liste = $labframe->Listbox();
@@ -204,26 +208,26 @@ foreach (
 my $labframeonglet = $mw->LabFrame( -label => 'LabFrame onglets' );
 
 # NoteBook
-my $NoteBook = $labframeonglet->NoteBook();
-my $onglet1  = $NoteBook->add( "onglet 1", -label => "Tk::Text", );
-my $onglet2  = $NoteBook->add( "onglet 2", -label => "Canvas", );
-my $onglet3  = $NoteBook->add( "onglet 3", -label => "Menu", );
-my $onglet4  = $NoteBook->add( "onglet 4", -label => "disabled", -state => 'disabled' );
-my $onglet5  = $NoteBook->add( "onglet 5", -label => "Tk::Table" );
-my $onglet6  = $NoteBook->add( "onglet 6", -label => "Tk::TList" );
-my $onglet7  = $NoteBook->add( "onglet 7", -label => "Tk::ProgressBar" );
+my $notebook = $labframeonglet->NoteBook();
+my $onglet1  = $notebook->add( 'onglet 1', -label => 'Tk::Text', );
+my $onglet2  = $notebook->add( 'onglet 2', -label => 'Canvas', );
+my $onglet3  = $notebook->add( 'onglet 3', -label => 'Menu', );
+my $onglet4  = $notebook->add( 'onglet 4', -label => 'disabled', -state => 'disabled' );
+my $onglet5  = $notebook->add( 'onglet 5', -label => 'Tk::Table' );
+my $onglet6  = $notebook->add( 'onglet 6', -label => 'Tk::TList' );
+my $onglet7  = $notebook->add( 'onglet 7', -label => 'Tk::ProgressBar' );
 
-my $WidgetText = $onglet1->Scrolled( 'Text', -scrollbars => 'osoe', );
-$WidgetText->insert( 'end', "1 : data example\n" );
-$WidgetText->insert( 'end', "2 : data example\n" );
+my $widget_text = $onglet1->Scrolled( 'Text', -scrollbars => 'osoe', );
+$widget_text->insert( 'end', "1 : data example\n" );
+$widget_text->insert( 'end', "2 : data example\n" );
 
 # Canvas GradientColor
-my $Canvas = $onglet2->GradientColor();
-my $but_canvas = $Canvas->Button( -text => 'Test button' );
-$Canvas->createOval( 10, 10, 50, 50, -fill => 'green' );
-$Canvas->createWindow( 75, 75, -window => $but_canvas );
+my $canvas = $onglet2->GradientColor();
+my $but_canvas = $canvas->Button( -text => 'Test button' );
+$canvas->createOval( 10, 10, 50, 50, -fill => 'green' );
+$canvas->createWindow( 75, 75, -window => $but_canvas );
 
-my $Menubutton = $onglet3->Menubutton(
+my $menu_button = $onglet3->Menubutton(
   -text      => 'Menubutton',
   -menuitems => [
     [ 'command', => 'one' ],
@@ -233,14 +237,14 @@ my $Menubutton = $onglet3->Menubutton(
     [ 'command', => 'four' ],
   ],
 );
-my $languagemenu = $Menubutton->cascade(
+my $languagemenu = $menu_button->cascade(
   -label   => 'Your language please ?',
   -tearoff => 0,
 );
 $languagemenu->checkbutton( -label => 'Perl', );
 $languagemenu->checkbutton( -label => 'JAVA', );
 
-my $Optionmenu = $onglet3->Optionmenu(
+my $menu_option = $onglet3->Optionmenu(
   -options => [
     [ 'January'   => 1 ],
     [ 'February'  => 2 ],
@@ -274,12 +278,12 @@ my $table = $onglet5->Table(
 )->pack;
 
 foreach $col ( 1 .. 9 ) {
-  my $col_header = $onglet5->Button( -text => "Column " . $col );
+  my $col_header = $onglet5->Button( -text => 'Column' . $col );
   $table->put( 0, $col, $col_header );
 }
 
 foreach $row ( 1 .. 5 ) {
-  my $row_header = $onglet5->Button( -text => "Row " . $row );
+  my $row_header = $onglet5->Button( -text => 'Row' . $row );
   $table->put( $row, 0, $row_header );
   foreach $col ( 1 .. 9 ) {
     my $cell = $onglet5->Entry( -width => 10, -textvariable => \$cell_vars[$row][$col] );
@@ -301,29 +305,29 @@ my $progress = $onglet7->ProgressBar(
   -colors => [ 0, 'red' ],
   -width  => 20,
 )->pack(qw / -pady 10 /);
-$onglet7->Button( -text => "start progressbar", -command => \&ProgressBar )->pack(qw / -pady 10 /);
+$onglet7->Button( -text => 'start progressbar', -command => \&progressbar )->pack(qw / -pady 10 /);
 
 # Display widget
-$label->grid( $BrowseEntryTheme, qw/ -padx 10 -pady 10 / );
+$label->grid( $browse_entry_theme, qw/ -padx 10 -pady 10 / );
 $labframe->grid( $labframeonglet, qw/ -padx 10 -pady 10 / );
 
 $labelentry->grid( $entry, $entrydisabled, qw/ -padx 10 -pady 10 / );
-$but1->grid( $but2, $ColoredButton1, qw/ -padx 10 -pady 10 / );
+$but1->grid( $but2, $coloredbutton1, qw/ -padx 10 -pady 10 / );
 
-$NoteBook->pack(qw/ -expand 1 -fill both -padx 10 -pady 10 /);
-$WidgetText->grid(qw/ -padx 10 -pady 10 /);
-$Canvas->grid(qw/ -padx 10 -pady 10 /);
-$Menubutton->grid( $Optionmenu, qw/ -padx 10 -pady 10 / );
+$notebook->pack(qw/ -expand 1 -fill both -padx 10 -pady 10 /);
+$widget_text->grid(qw/ -padx 10 -pady 10 /);
+$canvas->grid(qw/ -padx 10 -pady 10 /);
+$menu_button->grid( $menu_option, qw/ -padx 10 -pady 10 / );
 
-$checkbutton1->grid( $ColoredButton2, $ColoredButton3, qw/ -padx 10 -pady 10 / );
-$Radiobutton1->grid( $Radiobutton2,   $Radiobutton3,   qw/ -padx 10 -pady 10 / );
-$but_messageBox->grid( $but_MsgBox, $but_DialogBox, qw/ -padx 10 -pady 10 / );
-$but_Dialog->grid( $Spinbox, $scale, qw/ -padx 10 -pady 10 / );
+$checkbutton1->grid( $coloredbutton2, $coloredbutton3, qw/ -padx 10 -pady 10 / );
+$radiobutton1->grid( $radiobutton2,   $radiobutton3,   qw/ -padx 10 -pady 10 / );
+$button_messagebox->grid( $button_msgbox, $button_dialogbox, qw/ -padx 10 -pady 10 / );
+$button_dialog->grid( $spinbox, $scale, qw/ -padx 10 -pady 10 / );
 $liste->grid( $hlist, $tree, qw/ -padx 5 -pady 5 / );
 
 MainLoop;
 
-sub ProgressBar {
+sub progressbar {
   for ( my $i = 0; $i <= 100; $i = $i + 10 ) {
     $progress->value($i);
     $progress->update;
